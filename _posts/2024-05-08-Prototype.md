@@ -40,3 +40,12 @@ log(f2());
 브라우저 콘솔에서 `console.dir` 메서드를 사용하면 함수 객체의 내부를 볼 수 있다. <br>
 또한, `Object.getOwnPropertyDescriptors` 메서드를 통해 `square` 함수의 모든 프로퍼티의 프로퍼티 어트리뷰트를 확인할 수 있다. <br>
 ![image](https://github.com/Y0-0N63/STUDY-4242/assets/144354615/a8079b70-fa7b-46e0-a91d-3a74b96f2d14)
+
+`arguments`, `caller`, `length`, `name`, `prototype` 프로퍼티는 모두 일반 객체에는 없는 함수 객체 고유의 데이터 프로퍼티다. <br>
+하지만 `__proto__`는 접근자 프로퍼티이며, 함수 객체 고유의 프로퍼티가 아니라 Object.prototype 객체의 프로퍼티를 상속받은 것이다. 해당 객체의 프로퍼티는 모든 객체가 상속받아 사용할 수 있으며 이에 관해서는 뒤에서 더 자세히 알아보고자 한다. <br>
+일단 함수 객체의 프로퍼티에 대해 하나씩 살펴보고자 한다.
+<br>
+
+**arguments 프로퍼티**
+함수 객체의 arguments 프로퍼티 값은  arguments 객체다. arguments 객체는 함수 호출 시 전달된 인수(argument)들의 정보를 담고 있는 순회 가능한 유사 배열 객체이며 함수 내부에서 지역 변수처럼 사용되기 때문에 함수 외부에서는 참조할 수 없다. <br>
+arguments 프로퍼티는 ES3부터 표준에서 폐지되었기 때문에 Function.arguments와 같은 사용법은 권장되지 않으며 함수 내부에서 지역 변수처럼 사용할 수 있는 arguments 객체를 참조하도록 한다.
