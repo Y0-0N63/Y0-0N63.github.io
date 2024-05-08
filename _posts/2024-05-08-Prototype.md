@@ -130,8 +130,8 @@ console.log(anonymousFunc.name);
 
 `prototype` 프로퍼티는 생성자 함수로 호출할 수 있는 함수 객체, 즉 constructor만이 소유하는 프로퍼티다. <br>
 따라서 일반 객체와 생성자 함수로 호출할 수 없는 non-constructor에는 `prototype` 프로퍼티가 없다. <br>
-`prototype` 프로퍼티는 함수가 객체를 생성하는 생성자 함수로 호출될 때, 생성자 함수가 생성할 인스턴스의 프로토타입 객체를 가리킨다.
-
-<br>
+`(function(){}).hasOwnProperty('prototype');` <br>
+위 코드에서, 함수 객체는 `prototype` 프로퍼티를 갖고 있기 때문에 true를 반환한다. <br>
+따라서 `prototype` 프로퍼티는 함수가 객체를 생성하는 생성자 함수로 호출될 때, 생성자 함수가 생성할 인스턴스의 프로토타입 객체를 가리킨다.
 
 ## 프로토타입
