@@ -37,6 +37,6 @@ log(f2());
 
 ### 함수 객체의 프로퍼티
 
-브라우저 콘솔에서 `console.dir` 메서드를 사용하면 함수 객체의 내부를 볼 수 있다.
-
-![image](https://github.com/Y0-0N63/STUDY-4242/assets/144354615/9c3e6da4-4fb3-4295-aabe-835b2119c5a9)
+브라우저 콘솔에서 `console.dir` 메서드를 사용하면 함수 객체의 내부를 볼 수 있다. <br>
+또한, `Object.getOwnPropertyDescriptors` 메서드를 통해 `square` 함수의 모든 프로퍼티의 프로퍼티 어트리뷰트를 확인할 수 있다. <br>
+![image](https://github.com/Y0-0N63/STUDY-4242/assets/144354615/a8079b70-fa7b-46e0-a91d-3a74b96f2d14)
