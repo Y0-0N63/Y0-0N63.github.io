@@ -1,137 +1,187 @@
----
-layout: single
-title: "함수와 일급 객체, 프로토타입"
-categories: STUDY4242
-classes: wide
----
+/* ==========================================================================
+   STYLE RESETS
+   ========================================================================== */
 
-## 함수와 일급 객체
+* { box-sizing: border-box; }
 
-### 일급 객체란?
+html {
+  /* apply a natural box layout model to all elements */
+  box-sizing: border-box;
+  background-color: $background-color;
+  font-size: 16px;
 
-1. 무명의 리터럴로 생성할 수 있다. 즉, 런타임에 생성이 가능하다.
-2. 변수나 자료 구조(객체, 배열 등)에 저장할 수 있다.
-3. 함수의 매개변수에 전달할 수 있다. 즉, 함수의 인자로 사용된다.
-4. 함수의 반환값(결과)으로 사용할 수 있다.
+  @include breakpoint($medium) {
+    font-size: 18px;
+  }
 
-자바스크립트의 함수는 위의 조건을 모두 만족하므로 일급 객체다. 따라서 함수를 객체와 동일하게 사용할 수 있으며, 더 나아가 값으로도 다룰 수 있다. <br>
-함수는 값을 사용할 수 있는 곳(변수 할당문, 객체의 프로퍼티 값, 배열의 요소, 함수 호출의 인수, 함수 반환문)이라면 어디서든지 리터럴로 정의할 수 있으며 런타임에 함수 객체로 평가된다.
-```
-<script>
-const add2 = a => a + 2; // (1)
-log(add2); // (2)
-// (3)
-const f = () => () => 1;
-log(f());
-// (4)
-const f2 = f();
-log(f2());
-</script>
-```
-(1) 변수 `add2`에 익명함수 `a=>a+2`를 담을 수 있다. <br>
-(2) 변수 `add2`에 담긴 함수를 다른 함수인 `log`의 인자로 전달할 수 있다. 즉, 함수는다른 함수나 메서드의 인자로 사용될 수 있다. <br>
-(3) `f` 함수를 실행하면 결과로 또 다른 함수를 반환한다. <br>
-(4) `f()`를 호출하여 반환된 함수를 변수 `f2`에 할당하고, 이처럼 변수에 담겨진 함수는 메서드에 담겨 인자로 사용되며 실행할 수도 있다. <br>
-<br>
-함수는 객체이지만 일반 객체와는 차이가 있다. 가령 일반 객체는 호출할 수 없지만, **함수 객체는 호출할 수 있다**는 점이 그렇다. 또한, 함수 객체는 일반 객체에는 없는 **함수 고유의 프로퍼티를 소유**한다.
+  @include breakpoint($large) {
+    font-size: 20px;
+  }
 
-### 함수 객체의 프로퍼티
+  @include breakpoint($x-large) {
+    font-size: 22px;
+  }
 
-브라우저 콘솔에서 `console.dir` 메서드를 사용하면 함수 객체의 내부를 볼 수 있다. <br>
-또한, `Object.getOwnPropertyDescriptors` 메서드를 통해 `square` 함수의 모든 프로퍼티의 프로퍼티 어트리뷰트를 확인할 수 있다.
-<br>
-![image](https://github.com/Y0-0N63/STUDY-4242/assets/144354615/a8079b70-fa7b-46e0-a91d-3a74b96f2d14)
+  -webkit-text-size-adjust: 100%;
+  -ms-text-size-adjust: 100%;
+}
 
-`arguments`, `caller`, `length`, `name`, `prototype` 프로퍼티는 모두 일반 객체에는 없는 함수 객체 고유의 데이터 프로퍼티다. <br>
-하지만 `__proto__`는 접근자 프로퍼티이며, 함수 객체 고유의 프로퍼티가 아니라 Object.prototype 객체의 프로퍼티를 상속받은 것이다. 해당 객체의 프로퍼티는 모든 객체가 상속받아 사용할 수 있으며 이에 관해서는 뒤에서 더 자세히 알아보고자 한다. <br>
-일단 함수 객체의 프로퍼티에 대해 하나씩 살펴보고자 한다.
-<br>
-<br>
-### arguments 프로퍼티
+/* Remove margin */
 
-함수 객체의 arguments 프로퍼티 값은  arguments 객체다. **arguments 객체는 함수 호출 시 전달된 인수(argument)들의 정보를 담고 있는 순회 가능한 유사 배열 객체**이며 함수 내부에서 지역 변수처럼 사용되기 때문에 함수 외부에서는 참조할 수 없다. <br>
-arguments 프로퍼티는 ES3부터 표준에서 폐지되었기 때문에 Function.arguments와 같은 사용법은 권장되지 않으며 함수 내부에서 지역 변수처럼 사용할 수 있는 arguments 객체를 참조하도록 한다. <br>
-<br>
-**자바스크립트는 함수의 매개변수와 인수의 개수가 일치하는지 확인하지 않는다.** 따라서 함수 호출 시 매개변수 개수만큼 인수를 전달하지 않아도 에러가 발생하지 않는다! <br>
-<br>
-함수를 정의할 때 선언한 매개변수는 함수 몸체 내부에서 변수와 동일하게 취급된다. <br>
-즉, 함수가 호출되면 함수 몸체 내에서 암묵적으로 매개변수가 선언되고 undefined로 초기화된 후 인수가 할당된다. 따라서 매개변수의 개수보다 인수를 적게 전달했을 경우, 인수가 전달되지 않은 매개변수는 undefined로 초기화된 상태를 유지하는 셈이다.
-<br>반대로, 매개변수의 개수보다 인수를 더 많이 전달한 경우, 초과된 인수는 그냥 무시된다. 그러나 초과된 인수가 버려지는 것은 아니다. 모든 인수는 암묵적으로 arguments 객체의 프로퍼티로 보관되기 때문이다.
-<br>
+body { margin: 0; }
 
-아래 예시를 통해 간단하게 알아보고자 한다.
-![image](https://github.com/Y0-0N63/STUDY-4242/assets/144354615/0485dfef-a506-46f4-87d3-f2e735e2e339)
-<br>
-<br>
-arguments 객체는 인수를 프로퍼티 값으로 소유하며, 프로퍼티 키는 인수의 순서를 나타낸다. <br>
-arguments 객체의 callee 프로퍼티는 호출되어 arguments 객체를 생성한 함수(= 함수 자신)을 가리키고, length 프로퍼티는 인수의 개수를 가리킨다. <br>
-Symbol(Symbol.iterator) 프로퍼티는 arguments 객체를 순회 가능한 자로규조인 iterable로 만들기위한 프로퍼티다. 해당 프로퍼티를 키로 사용한 메서드를 구현하는 것에 의해 iterable이 된다. <br>
-<br>
-위 예제에서 그랬듯이, 자바스크립트는 선언된 매개변수의 개수와 인수의 개수를 확인하지 않는다. 때문에, **함수가 호출되면 인수 개수를 확인하고 이에 따라 함수의 동작을 달리 정의할 필요**가 있을 수도 있다. 그리고 이때 사용하는 것이 **arguments 객체**이다! <br>
-<br>
-arguments 객체는 매개변수 개수를 확정할 수 없고, 매개 변수의 개수가 변할 수 있게 하는 **가변 인자 함수**를 구현할 때 유용하다. <br>
-<br>
+/* Selected elements */
 
-![image](https://github.com/Y0-0N63/STUDY-4242/assets/144354615/f75d3664-8674-40ad-be74-d4ab5bf1f8ed)
-<br>
-<br>
-arguments 객체는 배열 형태로 인자 정보를 담고 있으나 실제 배열이 아닌 **유사 배열 객체**(array-like object)다. 유사 배열 객체란 length 프로퍼티를 가진 객체로, 이를 통해 for 문으로 순회를 가능하게 하는 객체이다. <br>
-따라서 유사 배열 객체는 배열 메서드를 사용할 경우 에러가 발생한다. 번거로운 과정이긴 하지마는 배열 메서드를 사용하기 위해서는 `Function.prototype.call`, `Function.prototype.apply`를 사용하여 간접 호출이 가능하긴 하다. <br>
-![image](https://github.com/Y0-0N63/STUDY-4242/assets/144354615/c3f83a15-e86a-4a2b-8358-66cde0c7a7c6)
-<br>
-<br>
-ES6에서는 Rest 파라미터를 도입함으로써 번거로움을 해결하였다. <br>
-간단하게 말하자면 Rest 파라미터는 '...' 구문을 사용하여 함수 매개변수를 선언할 때 나타내는 자바스크립트의 기능이다. <br>
-예를 들어, 사용자가 입력한 수의 합계를 계산하는 함수를 정의할 때, 일반적으로는 정해진 개수의 매개변수를 받는 함수를 선언하여 매개변수를 개별적으로 지정한다. 그러나 Rest 파라미터를 사용하면 유연하게 임의의 개수의 매개변수를 수용할 수 있게 된다! <br>
-위 코드에서는 `args`를 배열로 처리하여, 해당 배열에 인수를 할당하도록 한다. 그런 후, `reduce()`를 통해 합계를 계산한다.
-<br>
-<br>
+::-moz-selection {
+  color: #fff;
+  background: #000;
+}
 
-### caller 프로퍼티
+::selection {
+  color: #fff;
+  background: #000;
+}
 
-`caller` 프로퍼티는 ECMAScript 사양에 포함되지 않은 **비표준 프로퍼티**이다. <br>
-따라서 짧게 훑고 넘어가자면, 함수 객체의 caller 프로퍼티는 **함수 자신을 호출한 함수**를 가리킨다.
-<br>
-<br>
+/* Display HTML5 elements in IE6-9 and FF3 */
 
-### length 프로퍼티
+article,
+aside,
+details,
+figcaption,
+figure,
+footer,
+header,
+hgroup,
+main,
+nav,
+section {
+  display: block;
+}
 
-`length` 프로퍼티는 **함수를 정의할 때 선언한 매개변수의 개수**를 가리킨다. <br>
-다만, `arguments` 객체의 `length` 프로퍼티와 함수 객체의 `length` 프로퍼티의 값은 다를 수도 있다. `arguments` 객체의 `length` 프로퍼티는 인자(argument)의 개수를 가리키고, 함수 객체의 `length` 프로퍼티는 매개변수(paramenter)의 개수를 가리키기 때문이다.
-<br>
-<br>
+/* Display block in IE6-9 and FF3 */
 
-### name 프로퍼티
+audio,
+canvas,
+video {
+  display: inline-block;
+  *display: inline;
+  *zoom: 1;
+}
 
-함수 객체의 `name` 프로퍼티는 함수 이름을 나타낸다. <br>
-여담으로, ES6에서 정식 표준이 된 프로퍼티이다. 따라서 ES5와 ES6에서 동작을 달리한다. 예를 들어, 익명 함수 표현식에서 ES5는의 `name` 프로퍼티는 빈 문자열을 값으로 가진다. 그러나 ES6에서는 함수 객체를 가리키는 식별자를 값으로 가진다.
-```
-var anonymousFunc = function() {};
-console.log(anonymousFunc.name);
-```
-위 코드에서 ES5의 경우, name 프로퍼티는 빈 문자열을 값으로 가진다. ES6의 경우, 함수 객체를 가리키는 변수 이름, 즉, anonymousFunc를 값으로 가진다. <br>
-추가로, 함수 이름과 함수 객체를 가리키는 식별자는 의미가 다르다. 함수를 호출할 때는 함수 이름이 아닌 함수 객체를 가리키는 식별자로 호출한다.
-<br>
-<br>
+/* Prevents modern browsers from displaying 'audio' without controls */
 
-### __proto__  접근자 프로퍼티
+audio:not([controls]) {
+  display: none;
+}
 
-모든 객체는 [[prototype]]이라는 내부 슬롯을 가지며, [[prototype]] 내부 슬롯은 객체지향 프로그래밍의 상속을 구현하는 프로토타입 객체를 가리킨다. 프로토타입 객체에 대해서는 이후에 더 자세히 알아보고자 한다. <br>
-`__proto__` 프로퍼티는 [[prototype]] 내부 슬롯이 가리키는 프로토타입 객체에 접근하기 위해 사용하는 접근자 프로퍼티이다. 해당 접근자 프로퍼티를 통해 간접적으로 프로토타입 객체에 접근할 수 있다.
+a {
+  color: $link-color;
+}
 
-> **내부 슬롯** : 자바스크립트 엔진의 내부 동작(구현 알고리즘)을 설명하기 위해 사용하는 의사 프로퍼티(pseudo property)이다.
-> 즉, ECMAScript 문서에서 자바스크립트 내부 동작을 설명하기 위해 정의해 놓은 가상 메소드이다.
-> 자바스크립트 엔진의 내부 로직이기 때문에 원칙적으로는 직접 접근하거나 호출할 수 있는 방법을 제공하지 않는다. 다만, 일부 내부 슬롯과 내부 메서드에 한하여 간접적으로 접근할 수 있는 수단을 제공한다.
+/* Apply focus state */
 
-<br>
-<br>
+a:focus {
+  @extend %tab-focus;
+}
 
-### prototype 프로퍼티
+/* Remove outline from links */
 
-`prototype` 프로퍼티는 생성자 함수로 호출할 수 있는 함수 객체, 즉 constructor만이 소유하는 프로퍼티다. <br>
-따라서 일반 객체와 생성자 함수로 호출할 수 없는 non-constructor에는 `prototype` 프로퍼티가 없다. <br>
-`(function(){}).hasOwnProperty('prototype');` <br>
-위 코드에서, 함수 객체는 `prototype` 프로퍼티를 갖고 있기 때문에 true를 반환한다. <br>
-따라서 `prototype` 프로퍼티는 함수가 객체를 생성하는 생성자 함수로 호출될 때, 생성자 함수가 생성할 인스턴스의 프로토타입 객체를 가리킨다.
+a:hover,
+a:active {
+  outline: 0;
+}
 
-## 프로토타입
+/* Prevent sub and sup affecting line-height in all browsers */
+
+sub,
+sup {
+  position: relative;
+  font-size: 75%;
+  line-height: 0;
+  vertical-align: baseline;
+}
+
+sup {
+  top: -0.5em;
+}
+
+sub {
+  bottom: -0.25em;
+}
+
+/* img border in anchor's and image quality */
+
+img {
+  /* Responsive images (ensure images don't scale beyond their parents) */
+  max-width: 100%; /* part 1: Set a maximum relative to the parent*/
+  width: auto\9; /* IE7-8 need help adjusting responsive images*/
+  height: auto; /* part 2: Scale the height according to the width, otherwise you get stretching*/
+
+  vertical-align: middle;
+  border: 0;
+  -ms-interpolation-mode: bicubic;
+}
+
+/* Prevent max-width from affecting Google Maps */
+
+#map_canvas img,
+.google-maps img {
+  max-width: none;
+}
+
+/* Consistent form font size in all browsers, margin changes, misc */
+
+button,
+input,
+select,
+textarea {
+  margin: 0;
+  font-size: 100%;
+  vertical-align: middle;
+}
+
+button,
+input {
+  *overflow: visible; /* inner spacing ie IE6/7*/
+  line-height: normal; /* FF3/4 have !important on line-height in UA stylesheet*/
+}
+
+button::-moz-focus-inner,
+input::-moz-focus-inner { /* inner padding and border oddities in FF3/4*/
+  padding: 0;
+  border: 0;
+}
+
+button,
+html input[type="button"], // avoid the WebKit bug in Android 4.0.* where (2) destroys native `audio` and `video` controls
+input[type="reset"],
+input[type="submit"] {
+    -webkit-appearance: button; /* corrects inability to style clickable `input` types in iOS*/
+    cursor: pointer; /* improves usability and consistency of cursor style between image-type `input` and others*/
+}
+
+label,
+select,
+button,
+input[type="button"],
+input[type="reset"],
+input[type="submit"],
+input[type="radio"],
+input[type="checkbox"] {
+    cursor: pointer; /* improves usability and consistency of cursor style between image-type `input` and others*/
+}
+
+input[type="search"] { /* Appearance in Safari/Chrome*/
+  box-sizing: border-box;
+  -webkit-appearance: textfield;
+}
+
+input[type="search"]::-webkit-search-decoration,
+input[type="search"]::-webkit-search-cancel-button {
+  -webkit-appearance: none; /* inner-padding issues in Chrome OSX, Safari 5*/
+}
+
+textarea {
+  overflow: auto; /* remove vertical scrollbar in IE6-9*/
+  vertical-align: top; /* readability and alignment cross-browser*/
+}
