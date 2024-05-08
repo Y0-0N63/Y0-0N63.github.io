@@ -369,3 +369,61 @@ Person 생성자 함수는 사용자 정의 생성자 함수이기 때문에 프
 ![image](https://github.com/Y0-0N63/STUDY-4242/assets/144354615/55c48898-a412-4675-97e3-4ba8ebf9761c)
 
 ## 7. 프로토타입 체인
+```
+function Person(name) {
+  this.name = name;
+}
+
+Person.prototype.sayHello = function(){
+  console.log(`Hi! My name is ${this.name}`);
+};
+
+const me = new Person('Lee');
+
+console.log(me.hasOwnProperty('name'));
+```
+위 코드를 보면, Person 생성자 함수에 의해 생성된 me 객체는 `Object.prototype`의 메서드인 hasOwnProperty 또한 호출하였다. 이는 me 객체가 `Person.prototype` 뿐만 아니라 `Object.prototype` 또한 상속받았다는 것을 의미한다. <br>
+이는 me 객체의 프로토타입은 `Person.prototype`이고, `Person.prototype`의 프로토타입은 `Object.prototype`이기 때문이다.
+
+![image](https://github.com/Y0-0N63/STUDY-4242/assets/144354615/82d0ba2d-9523-467c-a47c-e223c274bd74)
+
+자바스크립트는 **객체의 프로퍼티에 접근하려고 할 때, 해당 객체에 접근하려는 프로퍼티가 없다면 [[Prototype]] 내부 슬롯의 참조를 따라 자신의 부모 역할을 하는 프로토타입의 프로퍼티를 순차적으로 검색**한다. 이를 **프로토타입 체인**이라고 한다. 프로토타입 체인은 자바스크립트가 객체지향 프로그래밍의 상속을 구현하는 매커니즘이다. <br>
+프로토타입 체인의 최상위에 위치하는 객체는 언제나 `Object.prototype`이다. 따라서 모든 객체는 `Object.prototype`을 상속받으며 이를 **프로토타입 체인의 종점**(End of Prototype Chain)이라고 한다. `Object.prototype`의 프로토타입, 즉 [[Prototype]] 내부 슬롯의 값은 null이다. 따라서 프로토타입 체인의 종점인 `Object.prototype`에서도 프로퍼티를 검색할 수 없는 경우 undefined를 반환하며 에러가 발생하지는 않는다. <br>
+이처럼 자바스크립트 엔진은 프로토타입 체인을 따라, 객체 간의 상속 관계로 이루어진 프로토타입의 계층적인 구조에서 객체의 프로퍼티를 검색한다. <br>
+따라서 **프로토타입 체인은 상속과 프로퍼티 검색을 위한 메커니즘**이라고 할 수 있다.
+
+## 8. 오버라이딩과 프로퍼티 섀도잉
+```
+const Person = (function () {
+  function Person(name) {
+    this.name = name;
+  }
+  
+  Person.prototype.sayHello = function () {
+    console.log(`Hi! My name is ${this.name}`);
+  };
+  return Person;
+}());
+
+const me = new Person('Lee');
+
+// 인스턴스 메서드
+me.sayHello = function() {
+  console.log(`Hey! My name is ${this.name}`);
+};
+
+me.sayHello(); // 인스턴스 메서드가 호출된다.
+```
+
+![image](https://github.com/Y0-0N63/STUDY-4242/assets/144354615/c0737c29-a3f4-447b-b62f-bb78389f8a8e)
+
+프로토타입이 소유한 프로퍼티를 프로토타입 프로퍼티, 인스턴스가 소유한 프로퍼티를 인스턴스 프로퍼티라고 부른다. <br>
+프로토타입 프로퍼티오 같은 이름의 프로퍼티를 인스턴스에 추가하면 프로토타입 체인에 따라 프로토타입 프로퍼티를 검색하여, 인스턴스 프로퍼티로 추가한다. (프로토타입 프로퍼티를 덮어쓰는 것이 아니다!) <br>
+위 예시에서, 인스턴스 메서드 sayHello는 프로토타입 sayHello를 오버라이딩했고, 프로토타입 메서드 sayHello는 가려져 "Hey! My name is Lee"가 출력된다. <br>
+이처럼 상속 관계에 의해 프로퍼티가 가려지는 현상을 **프로퍼티 섀도잉**이라고 부른다.
+
+>**오버라이딩** (Overriding) : 상위 클래스가 가지고 있는 메서드를 하위 클래스가 재정의하여 사용하는 방식
+
+프로퍼티를 삭제하는 경우도 마찬가지다. 프로토타입 메서드가 아닌 인스턴스 메서드가 삭제되며, 당연히 이후에는 프로토타입 메서드가 호출된다. 여기서 한 번 더 메서드를 삭제하여 프로토타입 메서드를 삭제해보고자 시도한다면, 불가능하다는 것을 알 수 있다. <br>
+즉, 하위 객체를 통해 프로토타입의 프로퍼티를 변경 또는 삭제하는 것은 불가능하다. get 액세스는 허용되나 set 액세스는 허용되지 않는 셈이다. <br>
+만일 프로토타입 프로퍼티를 변경 또는 삭제하고 싶다면, 하위 객체를 통해 프로토타입 체인으로 접근하는 것이 아니라 프로토타입에 직접 접근해야 한다.
