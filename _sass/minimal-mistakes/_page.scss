@@ -118,7 +118,7 @@ body {
 
   /* paragraph indents */
   p {
-    margin: 0 0 20px;
+    margin: 0 0 25px;
     // margin: 0 0 $indent-var;
 
     /* sibling indentation*/
@@ -149,7 +149,7 @@ body {
 
     &::before,
     &::after {
-      letter-spacing: -0.2em;
+      letter-spacing: 0.2em;
       content: "\00a0"; /* non-breaking space*/
     }
   }
