@@ -246,3 +246,15 @@ console.log(anonymousFunc.name);
 생성자 함수로 객체를 생성한 후, `__proto__` 접근자 프로퍼티와 prototype 프로퍼티로 프로토타입 객체에 접근하면, 결국 동일한 프로토타입을 가리킨다는 것을 알 수 있다.
 
 ### 프로토타입의 constructor 프로퍼티와 생성자 함수
+
+모든 프로토타입은 constructor 프로퍼티를 가진다. 이 constructor 프로퍼티는 prototype 프로퍼티로 자신을 참조하고 있는 생성자 함수를 가리킨다. 이 연결은 생성자 함수가 생성될 때, 즉 함수 객체가 생성될 때 이루어진다.
+
+![image](https://github.com/Y0-0N63/STUDY-4242/assets/144354615/1d0dda1c-4a9a-4327-9190-7abfe883a6a5)
+
+![image](https://github.com/Y0-0N63/STUDY-4242/assets/144354615/0c197d4e-dbd2-43ac-9c89-16c22d0cdac2)
+
+위 예제에서 Person 생성자 함수는 객체 me를 생성했다. me 객체는 프로토타입의 constructor 프로퍼티를 통해 생성자 함수와 연결된다. <br>
+me 객체에는 constructor 프로퍼티가 없지만, me 객체의 프로토타입인 Person.prototype에는 constructor 프로퍼티가 있다. <br>
+따라서 me 객체는 프로토타입인 Person.prototype의 constructor 프로퍼티를 상속받아 사용한다.
+
+## 리터럴 표기법에 의해 생성된 객체의 생성자 함수와 프로토타입
