@@ -84,7 +84,6 @@ arguments 프로퍼티는 ES3부터 표준에서 폐지되었기 때문에 Funct
 
 ![image](https://github.com/Y0-0N63/STUDY-4242/assets/144354615/0485dfef-a506-46f4-87d3-f2e735e2e339)
 
-<br>
 arguments 객체는 인수를 프로퍼티 값으로 소유하며, 프로퍼티 키는 인수의 순서를 나타낸다. <br>
 arguments 객체의 callee 프로퍼티는 호출되어 arguments 객체를 생성한 함수(= 함수 자신)을 가리키고, length 프로퍼티는 인수의 개수를 가리킨다. <br>
 Symbol(Symbol.iterator) 프로퍼티는 arguments 객체를 순회 가능한 자료구조인 iterable로 만들기위한 프로퍼티다. <br>
@@ -98,7 +97,6 @@ arguments 객체는 매개변수 개수를 확정할 수 없고, 매개 변수�
 
 ![image](https://github.com/Y0-0N63/STUDY-4242/assets/144354615/f75d3664-8674-40ad-be74-d4ab5bf1f8ed)
 
-<br>
 arguments 객체는 배열 형태로 인자 정보를 담고 있으나 실제 배열이 아닌 **유사 배열 객체**(array-like object)다. <br>
 유사 배열 객체란 length 프로퍼티를 가진 객체로, 이를 통해 for 문으로 순회를 가능하게 하는 객체이다. <br>
 따라서 유사 배열 객체는 배열 메서드를 사용할 경우 에러가 발생한다. <br>
@@ -106,7 +104,6 @@ arguments 객체는 배열 형태로 인자 정보를 담고 있으나 실제 �
 
 ![image](https://github.com/Y0-0N63/STUDY-4242/assets/144354615/c3f83a15-e86a-4a2b-8358-66cde0c7a7c6)
 
-<br>
 ES6에서는 Rest 파라미터를 도입함으로써 번거로움을 해결하였다. <br>
 간단하게 말하자면 Rest 파라미터는 '...' 구문을 사용하여 함수 매개변수를 선언할 때 나타내는 자바스크립트의 기능이다. <br>
 예를 들어, 사용자가 입력한 수의 합계를 계산하는 함수를 정의할 때, 일반적으로는 정해진 개수의 매개변수를 받는 함수를 선언하여 매개변수를 개별적으로 지정한다. <br>
@@ -280,8 +277,6 @@ ES6의 경우, 함수 객체를 가리키는 변수 이름, 즉, anonymousFunc�
 `__proto__` 접근자 프로퍼티는 `Object.prototype`의 프로퍼티기 때문에 모든 객체는 상속을 통해 `Object.prototype.__proto__` 접근자 프로퍼티를 사용할 수 있다.
 
 ![image](https://github.com/Y0-0N63/STUDY-4242/assets/144354615/fc34e80f-3847-4e12-9e28-c93c1d36551d)
-
-<br>
 
 **`__proto__` 접근자 프로퍼티를 통해 프로토타입에 접근하는 이유** 
 
