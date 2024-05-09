@@ -268,13 +268,14 @@ ES6의 경우, 함수 객체를 가리키는 변수 이름, 즉, anonymousFunc�
 `Object.prototype`의 접근자 프로퍼티인 `__proto__`는 getter, setter 함수라고 부르는 접근자 함수(`[[Get]]`, `[[Set]]` 프로퍼티 어트리뷰트에 할당된 함수)를 통해 `[[Prototype]]` 내부 슬롯의 값인 프로토타입을 취득하거나 할당한다. <br>
 `__proto__` 접근자 프로퍼티를 통해 프로토타입에 접근하면 내부적으로 getter 함수인 `[[Get]]`이 호출된다. <br>
 `__proto__` 접근자 프로퍼티를 통해 새로운 프로토타입을 할당하면 setter 함수인 `[[Set]]`이 호출된다.
-
 <br>
 
-**`__proto__` 접근자 프로퍼티는 상속을 통해 사용된다.** 
+**`__proto__` 접근자 프로퍼티는 상속을 통해 사용된다.** <br>
 `__proto__` 접근자 프로퍼티는 `Object.prototype`의 프로퍼티기 때문에 모든 객체는 상속을 통해 `Object.prototype.__proto__` 접근자 프로퍼티를 사용할 수 있다.
 
 ![image](https://github.com/Y0-0N63/STUDY-4242/assets/144354615/fc34e80f-3847-4e12-9e28-c93c1d36551d)
+
+<br>
 
 **`__proto__` 접근자 프로퍼티를 통해 프로토타입에 접근하는 이유** 
 
