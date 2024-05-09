@@ -320,7 +320,8 @@ ES6의 경우, 함수 객체를 가리키는 변수 이름, 즉, anonymousFunc�
 
 ### 3-3. 프로토타입의 constructor 프로퍼티와 생성자 함수
 
-모든 프로토타입은 constructor 프로퍼티를 가진다. 이 constructor 프로퍼티는 prototype 프로퍼티로 자신을 참조하고 있는 생성자 함수를 가리킨다. <br>
+모든 프로토타입은 constructor 프로퍼티를 가진다. <br>
+이 **constructor 프로퍼티는 prototype 프로퍼티로 자신을 참조하고 있는 생성자 함수**를 가리킨다. <br>
 이 연결은 생성자 함수가 생성될 때, 즉 함수 객체가 생성될 때 이루어진다.
 
 ![image](https://github.com/Y0-0N63/STUDY-4242/assets/144354615/1d0dda1c-4a9a-4327-9190-7abfe883a6a5)
