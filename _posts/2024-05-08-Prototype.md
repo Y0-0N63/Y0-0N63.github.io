@@ -522,21 +522,148 @@ me 객체는 비록 프로토타입과 생성자 함수 간의 연결이 파괴�
 
 `Object.create` 메서드는 명시적으로 프로토타입을 지정하여 새로운 객체를 생성한다. 이는 다른 객체 생성 방식과 마찬가지로 추상 연산 OrdinaryObjectCreate를 호출한다. <br>
 `Object.create` 메서드의 첫 번째 매개변수에는 생성할 객체의 프로토타입으로 지정할 객체를 전달한다. 두 번째 매개변수에는 생성할 객체의 프로퍼티 키와 프로퍼티 디스크립터 객체로 이루어진 객체를 전달한다. 해당 객체의 형식은 `Object.defineProperties`메서드의 두 번째 인수와 동일하며, 두 번째 인수는 옵션이므로 생략이 가능하다. <br>
+```
+/**
+* 지정된 프로토타입 및 프로퍼티를 갖는 새로운 객체를 생성하여 반환
+* @param {Object} prototype - 생성할 객체의 프로토타입으로 지정할 객체
+* @param {Object} [propertiesObject] - 생성할 객체의 프로퍼티를 갖는 객체
+* @returns {Object} 지정된 프로토타입 및 프로퍼티를 갖는 새로운 객체
+*/
+Object.create(prototype[, propertiesObject])
+```
+
+```
+// 프로토타입이 null인 객체를 생성한다. 생성된 객체는 프로토타입 체인 종점에 위치한다.
+let obj = Object.create(null); // obj->null
+console.log(Object.getPrototypeOf(obj)) === null); // true
+// Object.prototype을 상속받지 못한다.
+console.log(obj.toString()); // TypeError : obj.toString is not a function
+
+// obj -> Object.prototype -> null
+obj = Object.create(Object.prototype); // obj = {}과 동일
+console.log(Object.getPrototypeOf(obj) === Object.prototype); // true
+
+// obj -> Object.prototype -> null
+obj = Object.create(Object.prototype, {
+  // 추가한 x라는 프로퍼티는 값이 1, 쓰기 가능, 열거 가능, 설정 가능한 프로퍼티
+  x : { value : 1, writable : true, enumerable : true, configurable : true }
+});
+// obj = {x:1};, obj = Object.create(Object.prototype);, obj.x = 1;과 동일
+
+const myProto = {x:10}; // 임의의 객체 직접 상속받음
+// obj -> myProto -> Object.prototype -> null
+obj = Object.create(myProto);
+console.log(Object.getPrototype(obj) === myProto); // true
+
+function Person(name) {
+  this.name = name;
+}
+// obj->Person.prototype->Object.prototype->null
+obj = Object.create(Person.prototype);
+Console.log(Object.getPrototypeOf(obj) === Person.prototype); // true
+```
 첫 번째 매개변수에 전달한 객체의 프로토타입 체인에 속하는 객체를 생성하면서 직접적으로 상속을 구현해낼 수 있다. 이 메서드의 장점은 다음과 같다. <br>
 - new 연산자가 없이도 객체를 생성할 수 있다.
 - 프로토타입을 지정하면서 객체를 생성할 수 있다.
 - 객체 리터럴에 의해 생성된 객체도 상속받을 수 있다.
 
+> `Object.prototype`의 빌트인 메서드인 `Object.prototype.hasOwnProperty`, `Object.prototype.isPrototypeOf`, `Object.prototype.propertyIsEnumerable` 등은 모든 객체가 상속받아 호출할 수 있다. 프로토타입 체인의 종점 메소드이기 때문이다. <br>
+> 그러나 `Object.create` 메서드를 통패 프로토타입 체인의 종점에 위치하는 객체를 생성하면, 해당 객체는 `Object.prototype`의 빌트인 메서드를 사용할 수 없다. 이미 종점에 위치하므로 더이상 다른 객체를 프로토타입 체인에서 상속받지 않기 때문이다. <br>
+> 따라서 `obj.hasOwnProperty`처럼 빌트인 메서드를 객체가 직접 호출하는 것은 권장되지 않고, `Object.prototype.hasOwnProperty.call(obj, 'a')`의 방식처럼 간접적으로 호출하는 것이 좋다. <br>
+
 ### 11-2. 객체 리터럴 내부에서 `__proto__`에 의한 직접 상속
+
+`Object.create`의 단점은 두 번째 인자로 프로퍼티를 정의해야 한다는 점이다. <br>
+ES6에서부터는 객체 리터럴 내부에서 `__proto__` 접근자 프로퍼티를 사용하여 직접 상속을 구현할 수 있다.
+```
+const myProto = {x : 10};
+const obj = {
+  y : 20,
+  // 객체를 직접 상속받음
+  __proto__ : myProto // obj -> myProto -> Object.prototype -> null
+}
+/*
+const obj = Object.create(myProto, {
+  y : {value : 20, writable : true, enumerable : true, configurable : true }
+});
+*/
+```
 
 ## 12. 정적 프로퍼티/메서드
 
 정적(static) 프로퍼티/정적 메서드는 생성자 함수로 인스턴스를 생성하지 않아도 참조 및 호출할 수 있는 프로퍼티/메서드를 말한다.
+```
+function Person(name) {
+  this.name = name;
+}
+
+// 프로토타입 메서드
+Person.prototype.sayHello = function () {
+  console.log(`Hi! My name is ${this.name});
+}
+
+// 정적 프로퍼티
+Person.staticProp = 'static prop';
+
+// 정적 메서드
+Person.staicMethod = function() {
+  console.log('staticMethod');
+}
+
+const me = new Person('Lee')
+
+// 생성자 함수에 추가한 정적 프로퍼티 또는 메서드는 생성자 함수로 참조 또는 호출한다.
+Person.staticMethod(); // StaticMethod
+me.staticMethod(); //TypeErroro : me.staticMethod is not a function
+```
+
+![image](https://github.com/Y0-0N63/STUDY-4242/assets/144354615/434a6af3-c2ff-49b6-9ccb-5a8d23c1c907)
+
+일반적으로 정적 프로퍼티나 메서드는 생성자 함수 자체에 직접적으로 바인딩되어 있으므로 인스턴스에는 포함되지 않는다. <br>
+정적 메서드인 `staticMethod` 또한 `Person` 생성자 함수에 정의된 정적 메서드이므로 `Person` 생성자 함수에 바인딩되어 있다. `me`는 `Person` 생성자 함수를 통해 생성되었기 때문에, 인스턴스는 `Person` 생성자 함수의 프로토타입 체인 상에 위치한다.<br>
+그러나 `staticMethod`는 인스턴스의 프로토타입 체인 상에 존재하지 않는다. 따라서 `me.staticMethod()`를 호출할 수 없다. <br>
+즉, 인스턴스로 참조 또는 호출할 수 있는 프로퍼티 또는 메서드는 프로토타입 체인 상에 존재해야만 하며, 그렇지 않은 정적 프로퍼티 또는 메서드는 인스턴스가 참조하거나 호출할 수 없다! <br>
+<br>
+앞에서 본 `Object.create`메서드는 Object 생성자 함수의 정적 메서드이다.<br>
+그리고 `Object.prototype.hasOwnProperty` 메서드는 `Object.prototype`의 메서드이다. <br>
+따라서 `Object.create` 메서드는 인스턴스인 `Object` 생성자 함수가 생성한 객체로 호출할 수 없다! <br>
+하지만 `Object.prototype.hasOwnProperty` 메서드는 프로토타입 체인의 종점이기 때문에 모든 객체가 호출할 수 있다. <br>
+```
+// Object.create는 정적 메서드다.
+const obj = Object.create({ name : 'Lee' });
+// Object.prototype.hasOwnProperty는 프로토타입 메서드다.
+obj.hasOwnProperty('name'); // false
+```
+
+만약 인스턴스나 프로토타입 메서드 내에서 this를 사용하지 않는다면, 그 메서드를 정적 메서드로 변경할 수 있다. 일반적으로 메서드 내부 this는 해당 메서드를 호출한 인스턴스를 가리키기 때문이다. 그러나 메서드 내에서 this를 사용하지 않는다면, 즉, 메서드가 객체의 상태나 속성을 참고하지 않고 독립적으로 동작한다면, 해당 메서드는 객체의 인스턴스와 관련이 없기 때문이다. <br>
+그리고 정적 메서드는 특정 인스턴스에 속한 것이 아니라, 클래스 또는 생성자 함수 자체에 속해있다. 따라서 메서드를 정적 메서드로 변경하면, 해당 메서드가 객체의 인스턴스를 참조할 필요가 없어진다. <br>
+정리하면, 프로토타입 메서드를 호출하기 위해서는 클래스나 생성자 함수로부터 생성된 인스턴스를 통해야 하지만, 정적 메서드는 클래스나 생성자 함수 자체에 바인딩되어 있으므로 인스턴스를 생성하지 않아도 직접 호출할 수 있다.
+
+```
+function Foo() {}
+
+// 프로토타입 메서드 (this가 없으므로 정적 메서드로 변경하여도 동일한 효과)
+Foo.prototype.x = function() {
+  console.log('x');
+};
+
+const foo = new Foo();
+// 프로토타입 메서드를 호출하기 위해서는 인스턴스 생성해야 함
+foo.x(); // x
+
+// 정적 메서드
+Foo.x = function() {
+  console.log('x);
+};
+
+// 정적 메서드는 인스턴스를 생성하지 않아도 호출 가능
+Foo.x(); // x
+```
 
 ## 13. 프로퍼티 존재 확인
 ### 13-1. in 연산자
-in 연산자는 객체 내에 특정 프로퍼티가 존재하는지 여부를 확인한다.
-`key in object`
+in 연산자는 객체 내에 특정 프로퍼티가 존재하는지 여부를 확인한다. <br>
+`key in object` <br>
 이때, key는 프로퍼티 키를 나타내는 문자열이며, object는 객체로 평가되는 표현식이다. <br>
 ```
 const Person = {
@@ -558,4 +685,43 @@ ES6에서는 in 연산자 대신 새로 도입된 `Reflect.has`메서드를 사�
 
 ## 14. 프로퍼티 열거
 ### 14-1. for ... in 문
+객체의 모든 프로퍼티를 순회하며 열거(enumeration)하기 위해 사용한다. <br>
+`for (변수선언문 in 객체) {...}` <br>
+for  ... in 문은 객체의 프로퍼티 개수만큼 순회하며, 변수 선언문에서 선언한 변수에 프로퍼티 키를 반환한다.
+
+```
+const Person = {
+  name : 'Lee',
+  address : 'Seoul'
+};
+
+// in 연산자 : 객체가 상속받은 모든 프로토타입의 프로퍼티 확인 
+console.log('toString' in person); // true
+
+// for ... in : 상속받은 모든 프로토타입의 프로퍼티 열거하나
+// Object.prototype의 프로퍼티(ex_toString)의 프로퍼티는 열거되지 않음
+for (const key in person) {
+  console.log(key + ': ' + person[key]);
+}
+```
+열거되지 않는 이유는 `toString`이 열거할 수 없도록 `Object.prototype.toString`프로퍼티의 프로퍼티 어트리뷰트 [[Enumerable]]의 값이 false로 정의된 프로퍼티 때문이다. <br>
+정리하자면, **for ... in 문은 객체의 프로토타입 체인 상에 존재하는 모든 프로토타입의 프로퍼티 중에서 프로퍼티 어트리뷰트 [[Enumerable]] 값이 true인 프로퍼티를 순회하며 열거**한다. <br>
+참고로, 프로퍼티 어트리뷰트 [[Enumerable]]은 프로퍼티 열거 가능 여부를 나타내며 불리언 값을 갖는다. <br>
+만약 상속받은 프로퍼티를 제외한, 객체 자신의 프로퍼티만 열거하기 위해서는 `Object.prototype.hasOwnProperty`메서드를 사용하여 객체 자신의 프로퍼티인지 확인해야 한다.
+```
+for (const key in person) {
+  // 객체 자신의 프로퍼티인지 확인
+  if (!person.hasOwnProperty(key)) continue;
+  console.log(key + ': ' + person[key]);
+}
+```
+다만 for ... in 문은 프로퍼티를 열거할 때 순서를 보장하지 않는다. 하지만 대부분의 브라우저는 순서를 보장하고 숫자(사실은 문자열)인 프로퍼티 키에 대해서는 정렬을 실시한다. <br>
+배열에서는 for ... in 문보다 일반적인 for 문 혹은 for ... of 문 또는 `Array.prototype.forEach` 메서드를 사용하는 것을 권장한다. 사실 배열도 객체이기 때문에 프로퍼티와 상속받은 프로퍼티가 포함될 수 있다.
+
 ### 14-2. Object.keys/values/entries 메서드
+for ... in 문은 객체 자신의 고유 프로퍼티 뿐만 아니라 상속받은 프로퍼티 또한 열거한다. <br>
+따라서 `Object.prototype.hasOwnProperty`메서드를 사용하여 객체 자신의 프로퍼티인지 확인하는 추가 처리가 필요하다. <br>
+객체 자신의 고유 프로퍼티만 열거하기 위해서는, `Object.keys/values/entries` 메서드 사용이 권장된다. <br>
+`Object.keys` 메서드는 객체 자신이 열거 가능한 프로퍼티 키를 배열로 반환한다. <br>
+`Object.values` 메서드는 객체 자신의 열거 가능한 프로퍼티 값을 배열로 반환한다. <br>
+`Object.entries` 메서드는 객체 자신의 열거 가능한 프로퍼티 키와 값의 쌍의 배열을 배열에 담아 반환한다.
