@@ -6,17 +6,17 @@
 $background-color: #191D24 !default; // #252a34
 $text-color: #fafafa !default; //#eaeaea
 $primary-color: #008A90!default; //#00adb5
-$border-color: mix(#fff, $background-color, 18%) !default;
-$code-background-color: mix(#000, $background-color, 13%) !default;
-$code-background-color-dark: mix(#000, $background-color, 18%) !default;
-$form-background-color: mix(#000, $background-color, 13%) !default;
-$footer-background-color: mix(#000, $background-color, 28%) !default;
-$link-color: mix($primary-color, $text-color, 38%) !default;
-$link-color-hover: mix(#fff, $link-color, 33%) !default;
-$link-color-visited: mix(#000, $link-color, 23%) !default;
+$border-color: mix(#fff, $background-color, 17%) !default;
+$code-background-color: mix(#000, $background-color, 12%) !default;
+$code-background-color-dark: mix(#000, $background-color, 17%) !default;
+$form-background-color: mix(#000, $background-color, 12%) !default;
+$footer-background-color: mix(#000, $background-color, 27%) !default;
+$link-color: mix($primary-color, $text-color, 37%) !default;
+$link-color-hover: mix(#fff, $link-color, 32%) !default;
+$link-color-visited: mix(#000, $link-color, 22%) !default;
 $masthead-link-color: $text-color !default;
-$masthead-link-color-hover: mix(#000, $text-color, 18%) !default;
-$navicon-link-color-hover: mix(#000, $background-color, 28%) !default;
+$masthead-link-color-hover: mix(#000, $text-color, 17%) !default;
+$navicon-link-color-hover: mix(#000, $background-color, 27%) !default;
 
 .author__urls.social-icons i,
 .author__urls.social-icons .svg-inline--fa,
