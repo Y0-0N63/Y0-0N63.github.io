@@ -7,10 +7,3 @@ search: false
 
 @import "minimal-mistakes/skins/{{ site.minimal_mistakes_skin | default: 'default' }}"; // skin
 @import "minimal-mistakes"; // main partials
-
-// 추가
-@font-face {
-  font-family: "RIDIBatang";
-  font-weight: normal;
-  src: url(/assets/css/fonts/RIDIBatang.otf);
-}
