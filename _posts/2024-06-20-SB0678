@@ -1,0 +1,39 @@
+---
+layout: single
+title: "게시글 수정과 삭제"
+categories: SpringBoot
+classes: wide
+---
+
+# 게시글 수정: Update
+
+## 1. 수정 페이지 만들고 기존 데이터 불러오기
+
+1. '상세 페이지'에서 `Edit` 버튼 클릭
+2. Edit 요청을 받은 컨트롤러에서 해당 글의 id를 통해 DB에서 데이터를 가져옴
+```
+@GetMapping("/articles/{id}/edit")  
+public String edit(@PathVariable Long id, Model model){  
+  Article articleEntity = articleRepository.findById(id).orElse(null);  
+  model.addAttribute("article", articleEntity);  
+  return "articles/edit";  
+}
+```
+
+`Article articleEntity = articleRepository.findById(id).orElse(null);`
+
+
+: DB에서 데이터를 가져올 때는 리파지터리를 이용하기 때문에 articleRepository의 findById(id) 메서드로 데이터를 찾아 가져온다.
+`model.addAttribute("article", articleEntity);`
+3. 컨트롤러는 가져온 데이터를 뷰에서 사용할 수 있게 모델에 등록
+4. 모델에 등록된 데이터를 '수정 페이지'에서 보여줘 사용자가 내용 수정할 수 있게 함
+
+
+## 2. 데이터 수정해 DB에 반영한 후 상세 페이지로 리다이렉트하기
+
+1. 폼 데이터(=수정 요청 데이터)를 DTO에 담아 컨트롤러에서 받기
+2. DTO를 엔티티로 변환
+3. DB에서 기존 데이터를 수정 데이터로 갱신
+4. 수정 데이터를 '상세 페이지'로 리다이렉트
+
+# 게시글 삭제: Delete
